@@ -15,6 +15,17 @@ def softmax(x):
     sm = (np.exp(x).T / np.sum(np.exp(x),axis=1)).T
     return sm
 
+def relu(x):
+    return max(0,x),x
+
+def sigmoid(x):
+    return (1/(1+np.exp(-1*x))),x
+
+def derv_relu(x):
+    return relu(x)/x
+
+def derv_sigmoid(x):
+    return sigmoid(x)*(1-sigmoid(x))
 
 
 def retrieveData():    
@@ -39,20 +50,31 @@ def forward_prop(A,W,b):
     cache = (W,A,b)    
     return Z,cache
 
+def back_prop(dz,cache):
+    W,A,b,A_prev = cache
+    m= A_prev.shape[1] 
+    dW = (1/m)*np.dot(dz,A_prev.T)
+    db = (1/m)*np.sum(dz,axis=1,keepdims=True)
+    dA_prev = np.dot(W.T,dz) 
+    return dA_prev, dW, db
+
 
 def linear_forward_prop(A_prev,W,B,activation):
-    
     if activation =="sigmoid":
         Z,linear_cache = forward_prop(A_prev,W,B)
-        A, activation_cache = sigmoid(Z)
-        
+        A, activation_cache = sigmoid(Z)  
     if activation == "relu":
         Z,linear_cache = forward_prop(A_prev,W,B)
-        A, activation_cache = relu(Z)
-        
-    return A,activation_cache
+        A, activation_cache = relu(Z)  
+    cache = (linear_cache,activation_cache)
+    return A,cache
 
-
+def linear_backward_prop(da,cache,activation):
+    linear_cache,activation_cache = cache
+    
+    if activation == "sigmoid":
+        dz = back_prop(da,linear)
+    
 def L_model_forward(X, parameters):
     
     caches = []
@@ -68,6 +90,9 @@ def L_model_forward(X, parameters):
     caches.append(cache)
     
     return caches,AL
+
+
+def L_model_backward()
 
 def compute_cost(AL,Y):
     
